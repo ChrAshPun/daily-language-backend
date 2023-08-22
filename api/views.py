@@ -2,20 +2,46 @@ import random
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from spanishdict.models import SpanishWord
-from itblog.models import Article, Instructions
-from .serializers import SpanishWordSerializer, ITArticleSerializer, ITInstructionsSerializer
+from spanishdict.models import SpanishWord, SpanishVerb
+from itblog.models import Article
+from .serializers import SpanishWordSerializer, SpanishVerbSerializer, SpanishInfinitiveSerializer, ITArticleSerializer
 from .permissions import IsSuperUserOrReadOnly
-from django.db.models import F, Prefetch
+from django.db.models import F
+
+class SpanishInfinitiveList(APIView):
+  permission_classes = (IsSuperUserOrReadOnly,)
+
+  def get(self, request, format=None):
+    spa_infinitives = SpanishVerb.objects.order_by(F('infinitive_spa')).values('infinitive_spa').distinct()
+    infinitives_list = [item["infinitive_spa"] for item in spa_infinitives]
+
+    return Response(infinitives_list, status=status.HTTP_200_OK)
+
+class SpanishVerbList(APIView): # my own basic view
+  permission_classes = (IsSuperUserOrReadOnly,)
+
+  def get(self, request, format=None):
+    if (request.GET.get('filterby')):
+      infinitive = request.GET["filterby"]
+      if (infinitive == "any"):
+        spanishverbs = SpanishVerb.objects.order_by('?')[:12]
+      else:
+        spanishverbs = SpanishVerb.objects.filter(infinitive_spa=infinitive)
+    else:
+      spanishverbs = SpanishVerb.objects.all()
+
+    serializer = SpanishVerbSerializer(spanishverbs, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 class SpanishWordList(APIView): # my own basic view
   permission_classes = (IsSuperUserOrReadOnly,)
 
   def get(self, request, format=None):
-    spanishwords = list(SpanishWord.objects.all())
     if (request.GET.get('sample')):
       query_size = int(request.GET["sample"])
       spanishwords = random.sample(spanishwords, query_size)
+    else:
+      spanishwords = SpanishWord.objects.all()
     serializer = SpanishWordSerializer(spanishwords, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 

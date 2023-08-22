@@ -1,11 +1,27 @@
 # IT Blog
 
-04/2023 - I need to create ITBlog models and serializers that will be used by the ITBlog (React) website
-1. Create a Django app: Run the startapp command to create a new Django app. For example, python manage.py startapp myapp.
-2. Add app to INSTALLED_APPS: In the settings.py file of your project, add your app to the INSTALLED_APPS list.
-3. Create the model: In the models.py file of your app, define your model using Django's ORM. (Need one-to-many relationship this time, Sqlite does not support ArrayField)
+## 04/2023 - I need to create ITBlog models and API endpoint for the ITBlog (React) frontend
+1. Create a Django app - python manage.py startapp appname
+2. In the settings.py, add app to INSTALLED_APPS
+3. In the models.py, create models (need one-to-many relationship this time, Sqlite does not support ArrayField)
 4. makemigrations and migrate - creates a set of instructions that Django can use to modify the database schema to match the new model definitions
-5. Add model to admin panel: In the admin.py file of your app, register your model with the admin site.
-6. Add serializer: In the serializers.py file of your app, create a serializer class that defines how your model should be serialized and deserialized.
-7. Create the view: In the views.py file of your app, create a view function that handles HTTP requests and returns a response.
-8. Add view to urls.py: In the urls.py file of your app, add a URL pattern that maps a URL to your view function.
+5. In the admin.py, add models to admin panel
+6. In the serializers.py, add serializers
+7. In the views.py, create views ( views handle HTTP requests and returns a response)
+8. In the urls.py, add views (URL patterns map URLs to a view functions)
+9. Test on Postman
+Notes: changed null=True to default=""
+
+## How to set up Django and Gunicorn on Ubuntu server
+1. Create a virtual environment - python3 -m venv venv
+2. Activate virtual environment - source venv/bin/activate
+2. Install dependencies - pip3 install -r requirements.txt
+3. Install gunicorn - pip3 install gunicorn (this will add gunicorn to venv/bin/ )
+4. Check if Gunicorn can host project - gunicorn <django project>.wsgi:application --bind 0.0.0.0:8000
+5. Configure gunicorn service file: /etc/systemd/system/gunicorn.service
+6. Run these commands: 
+    sudo systemctl start gunicorn
+    sudo systemctl enable gunicorn
+    sudo systemctl status gunicorn
+    sudo systemctl daemon-reload
+    sudo systemctl restart gunicorn

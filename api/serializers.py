@@ -1,12 +1,21 @@
 from rest_framework import serializers
-from spanishdict.models import SpanishWord
+from spanishdict.models import SpanishWord, SpanishVerb
 from itblog.models import Article, Instructions
+
+class SpanishInfinitiveSerializer(serializers.ModelSerializer): 
+  class Meta:
+    model = SpanishVerb 
+    fields = ('infinitive_spa',)
+
+class SpanishVerbSerializer(serializers.ModelSerializer): 
+  class Meta:
+    model = SpanishVerb 
+    fields = ('infinitive_spa', 'infinitive_eng', 'conjugated_spa', 'conjugated_eng', 'mood', 'tense', 'pronoun')
 
 class SpanishWordSerializer(serializers.ModelSerializer): # convert Django model to JSON
   class Meta:
-    model = SpanishWord # specify database model
+    model = SpanishWord 
     fields = ('spa', 'eng',)
-
 
 class ITInstructionsSerializer(serializers.ModelSerializer):
   class Meta:
